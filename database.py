@@ -2,7 +2,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy import create_engine
-from flask import  session as login_session
+from flask import session as login_session
 
 
 Base = declarative_base()
@@ -48,7 +48,10 @@ class Item(Base):
     id = Column(Integer, primary_key=True)
     description = Column(String(250))
     category_id = Column(Integer, ForeignKey('category.id'))
-    category = relationship("Category", backref=backref("items", cascade="all, delete-orphan"))
+    category = relationship(
+        "Category",
+        backref=backref("items", cascade="all, delete-orphan")
+        )
 
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     user = relationship(User)
