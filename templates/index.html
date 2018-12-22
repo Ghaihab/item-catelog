@@ -1,0 +1,106 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <div class="row">
+      <div class="col-md-6" style="border-right: 1px solid #ccc;">
+          <h3>Categories <a class="btn btn-primary" href="category/create">Create</a></h3>
+            <div class="list-group" id="categories-list-group"></div>
+      </div>
+
+      <div class="col-md-6" >
+          <h3>Items</h3>
+            <div class="list-group" id="items-list-group">
+      </div>
+  </div>
+
+  <script type="text/javascript">
+
+    $.ajax({
+    'url' : '/categories',
+    'type' : 'GET',
+
+    'success' : function(data) {
+      $.each(data['categories'],function(index,category) {
+        $('#categories-list-group').append(
+          categoryRow(category.name,category.id)
+        );
+      });
+    }
+    });
+    function categoryRow(name,id){
+      return '<div class="row">'+
+      '<div class="col-md-9">'+
+      '<button type="button" class="list-group-item list-group-item-action" onclick="getItemsGivenCategoryId('+id+')">'+name+'</button>'+
+      '</div><div class="col-md-3">'+
+      '<a class="btn btn-primary" href="/category/'+id+'/item">Add Item</button></div></div>';
+    }
+    
+    function itemRow(name,id,isOwner){
+      var itemRow =  '<div class="row" data-item-id="'+id+'"><div class="col-md-8">'+
+                    '<div class="list-group-item">'+name+'</div></div>'+
+                '<div class="col-md-4">'+
+                    '<div></div>'
+                '</div></div>';
+      var ownerActions = '<a class="btn btn-success" href="/item/'+id+'/edit">Edit</a>'+
+                    '<button class="btn btn-danger" onclick="triggerSweetAlert('+id+')">Delete</button>';
+      
+      if(isOwner){
+        itemRow = itemRow.replace('<div></div>',ownerActions);
+      }
+      return itemRow;
+    }
+
+    function getItemsGivenCategoryId(category_id){
+      $('#items-list-group').html('');
+        $.ajax({
+      'url' : '/category/'+category_id+'/items',
+      'type' : 'GET',
+
+      'success' : function(data) {
+       
+        $.each(data['items'],function(index,item) {
+          $('#items-list-group').append(
+            itemRow(item.name,item.id,item.isOwner)
+          );
+        });
+      }
+      });
+    }
+
+    function triggerSweetAlert(item_id){
+      Swal({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.value) {
+          deleteItem(item_id);
+          Swal(
+            'Deleted!',
+            'Your item has been deleted.',
+            'success'
+            )
+          $('[data-item-id='+item_id+']').hide();
+        }
+      })
+    }
+
+    function deleteItem(item_id){
+      
+      $.ajax({
+      'url' : '/item/'+item_id+'/delete',
+      'type' : 'POST',
+
+      'success' : function(data) {
+        return true;
+      }
+      });
+      return false;
+    }
+  </script>
+
+{% endblock %}

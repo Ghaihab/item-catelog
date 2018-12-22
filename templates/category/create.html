@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<h2> Create New Category </h2>
+<br>
+<form method="POST" action="/category/save">
+  <div class="form-group">
+    <label for="c_name">Name</label>
+    <input type="text" name="c_name" class="form-control" id="c_name">
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}

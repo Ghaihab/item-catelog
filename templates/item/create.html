@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<h2> Add Item to {{category.name}}</h2>
+<br>
+<form method="POST" action="/category/{{category.id}}/item/save">
+  <div class="form-group">
+    <label for="i_name">Name</label>
+    <input type="text" name="i_name" class="form-control" id="i_name">
+  </div>
+  <div class="form-group">
+        <label for="i_description">Description</label>
+        <input type="text" name="i_description" class="form-control" id="i_description">
+      </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}
