@@ -27,6 +27,7 @@ in the current categories directory run:
 ```bash
 vagrant ssh 
 ```
+after login in the machine run:
 ```bash
 cd /vagrant
 ```
