@@ -11,10 +11,15 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+# Home page
+
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+# saveing the name and email sent by a request,
+#  find for creating a user and storing the values in the session
 
 
 @app.route('/process_google_auth', methods=['GET'])
@@ -32,11 +37,15 @@ def processGoogleAuth():
     login_session['user_id'] = user.id
     return jsonify(success=True)
 
+# clear the session and return a success response
+
 
 @app.route('/logout')
 def logout():
     login_session.clear()
     return jsonify(success=True)
+
+# showing the create category page only for the logged in user.
 
 
 @app.route('/category/create')
@@ -44,6 +53,8 @@ def categoryCreatePage():
     if(isGuestUser()):
         return redirect(url_for('index'))
     return render_template('category/create.html')
+
+# saving the category details sent by a request.
 
 
 @app.route('/category/save', methods=['POST'])
@@ -61,17 +72,23 @@ def saveCategory():
         flash("Category %s successfully added." % (categoryName), 'success')
     return redirect(url_for('index'))
 
+# getting all the categories and returning a JSON response.
+
 
 @app.route('/categories')
 def showAllCategories():
     categories = session.query(Category).all()
     return jsonify(categories=[category.serialize for category in categories])
 
+# getting all the items for a given category_id and returning a JSON response.
+
 
 @app.route('/category/<int:category_id>/items')
 def showAllItemsGivenCategoryId(category_id):
     items = session.query(Item).filter_by(category_id=category_id).all()
     return jsonify(items=[item.serialize for item in items])
+
+# showing the create item page only for the logged in user..
 
 
 @app.route('/category/<int:category_id>/item')
@@ -80,6 +97,9 @@ def addItemToCategoryPage(category_id):
         return redirect(url_for('index'))
     category = session.query(Category).filter_by(id=category_id).one()
     return render_template('item/create.html', category=category)
+
+# saving the items details sent by a requset.
+# and redirecitng the user to index page.
 
 
 @app.route('/category/<int:category_id>/item/save', methods=['POST'])
@@ -102,6 +122,8 @@ def saveItemToCategory(category_id):
     )
     return redirect(url_for('index'))
 
+# delete an item only for the logged in user.
+
 
 @app.route('/item/<int:item_id>/delete', methods=['POST'])
 def deleteItem(item_id):
@@ -115,6 +137,8 @@ def deleteItem(item_id):
     session.commit()
     return jsonify(success=True)
 
+# showing edit item page only for a logged in user.
+
 
 @app.route('/item/<int:item_id>/edit')
 def editItemPage(item_id):
@@ -126,6 +150,8 @@ def editItemPage(item_id):
         ).one()
     categories = session.query(Category).all()
     return render_template('item/edit.html', item=item, categories=categories)
+
+# saving new item details sent by a request.
 
 
 @app.route('/item/<int:item_id>/edit/apply', methods=['POST'])
@@ -145,6 +171,8 @@ def applyItemChanges(item_id):
     flash('The item has been successfully edited!', 'success')
     return redirect(url_for('index'))
 
+# checking if the user is guest.
+
 
 def isGuestUser():
     if login_session.get('user_id') is None:
@@ -155,4 +183,4 @@ def isGuestUser():
 if __name__ == '__main__':
     app.secret_key = 'secret_key'
     app.debug = True
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=8000, threaded=False)
