@@ -18,14 +18,15 @@ This project shows the relationship between the category and related items. You 
 
 
 ```bash
-vagrant up 
+cd categoires && run vagrant up 
 ```
+
+
+## Run Application
+in the current categories directory run:
 ```bash
 vagrant ssh 
 ```
-
-## Run Application
-
 ```bash
 cd /vagrant
 ```
@@ -50,6 +51,3 @@ python app.py
 |  /item/<int:item_id>/delete| Delete an Item
 |  /item/<int:item_id>/edit| Edit Item Page
 |  /item/<int:item_id>/edit/apply| update new item values
-
-
-
